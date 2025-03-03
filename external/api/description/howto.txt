@@ -1,0 +1,18 @@
+1. Download project.zip from StudIp
+2. Extract the ZIP at your home folder ~/
+3. Inspect ~/project/example/test.cpp for the API
+4. Test the API using the "simulator"
+open two terminals
+
+first terminal for simulator:
+cd ~/project/dummy/
+make clean; make; ./dummy
+
+second terminal for testcode:
+cd ~/project/example/
+make clean; make; ./test
+Attention: train_reportSpeed not working properly in simulator!
+
+5. Simulator successful ? Test it on hardware
+6. Write your own code and test it
+

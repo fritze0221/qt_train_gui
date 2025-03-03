@@ -1,0 +1,64 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "hw-ports.h"
+#include "sw-ports.h"
+#include "io-board.h"
+
+#include "tics.h"
+#include "stics.h"
+
+#include "pwm.h"
+#include "mf.h"
+
+// mf and pwm might also be global variables.....
+
+void dynamic_reconf()
+     {
+	MF  *mf;
+        mf = (MF *) iob_portconfig( 0, HWP_BIN_OUT );
+	mf_config( mf, 0 );
+	mf_set( mf, 2 );
+	mf_trigger( mf );
+     }
+
+void setup()
+     {
+	PWM *pwm;
+	MF  *mf;
+	// initialize
+	iob_init();
+	// setting up port 0 for pwm
+        pwm = (PWM *) iob_portconfig( 0, HWP_BIN_OUT );	// port 0
+	pwm_config( pwm, 0 );			// port nr; has to be used twice
+	pwm_set( pwm, 1, 3, 2 );		// bresenham, on=3, off=2
+	pwm_start( pwm );			// go
+	// setting up port 1 for mono flop
+        mf = (MF *) iob_portconfig( 1, HWP_BIN_OUT );
+	mf_config( mf, 1 );
+	mf_set( mf, 3 );
+	// mf_trigger is called in interrupt handler, just for an example
+     }
+
+void loop()
+     {
+	static int lcnt = 0;
+	lcnt++;
+	printf( "%2d ------------------\n", lcnt );
+        swp_handlers();
+	if ( lcnt == 3 )		// just as an example
+	   mf_trigger( (MF *) iob_getentry( 1 ) );
+        if ( lcnt == 15 )		// just as an example
+	   dynamic_reconf();
+        if ( lcnt == 20 )
+	   exit( 0 );
+     }
+
+int main( int argc, char **argv )
+    {
+       setup();
+       while( 1 )
+          loop();
+    }
+
